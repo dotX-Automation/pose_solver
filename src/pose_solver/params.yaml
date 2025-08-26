@@ -1,0 +1,112 @@
+header_include_path: pose_solver/pose_solver.hpp
+namespace: pose_solver
+node_class_name: PoseSolver
+
+params:
+  attitude.completition.enable:
+    type: bool
+    default_value: false
+    description: "Complete attitude estimation using auxiliary topic."
+    constraints: "It is a boolean value."
+    read_only: true
+    var_name: attitude_completition_enable_
+
+  attitude.completition.source.topic:
+    type: string
+    default_value: "/ekf_global/odometry"
+    description: "Attitude estimation auxiliary topic name."
+    constraints: "Must be a valid topic name."
+    read_only: true
+    var_name: attitude_completition_source_topic_
+
+  attitude.completition.source.type:
+    type: string
+    default_value: "odometry"
+    description: "Attitude estimation auxiliary topic type."
+    constraints: "Must be a value in {imu, odometry}."
+    read_only: true
+    validator: validate_attitude_completition_source_type
+
+  attitude.covariance:
+    type: double_array
+    default_value: [1e-1,  0.0,  0.0,
+                    0.0, 1e-1,  0.0,
+                    0.0,  0.0, 1e-1]
+    min_value: -1000000000.0
+    max_value: 1000000000.0
+    step: 0.0
+    description: "Covariance assigned to the computed attitude."
+    constraints: "Must be expressed as the row-wise complete matrix or as the diagonal elements only."
+    read_only: false
+    validator: validate_attitude_covariance
+
+  message_filters.queue_size:
+    type: integer
+    default_value: 10
+    min_value: 0
+    max_value: 1000
+    step: 1
+    description: "Message filters approximate time synchronization queue size."
+    constraints: "Must be a integer number in range [0, 1000]."
+    read_only: true
+    var_name: message_filters_queue_size_
+
+  poses_topic_and_link:
+    type: string_array
+    default_value: 
+      - "/topic@link"
+    description: "List of topic followed by the sensor link name."
+    constraints: "The topic and the link must be valid and splitted by @. The array size must be between 1 and 3."
+    read_only: true
+    validator: validate_poses_topic_and_link
+
+  tf.agent_prefix:
+    type: string
+    default_value: ""
+    description: "Agent frame prefix, slash included, added to both sensor and base links."
+    constraints: "Must be a valid frame prefix."
+    read_only: true
+    var_name: tf_agent_prefix_
+
+  tf.base_link:
+    type: string
+    default_value: "base_link"
+    description: "Agent base link name."
+    constraints: "Must be a valid link name."
+    read_only: true
+    var_name: tf_base_link_
+
+  tf.fixed_frame:
+    type: string
+    default_value: "map"
+    description: "Fixed frame in which the agent moves."
+    constraints: "Must be a valid link name."
+    read_only: true
+    var_name: tf_fixed_frame_
+
+  tf.ignore_stamp:
+    type: bool
+    default_value: false
+    description: "Ignore requested timestamp in TF2 lookup operations."
+    constraints: "Should be false."
+    read_only: true
+    var_name: tf_ignore_stamp_
+
+  tf.static_sensors:
+    type: bool
+    default_value: true
+    description: "The sensor link are fixed to the body, hence execute TF2 lookup operations once."
+    constraints: "Should be true."
+    read_only: true
+    var_name: tf_static_sensors_
+
+  tf.timeout_ms:
+    type: integer
+    default_value: 100
+    min_value: 0
+    max_value: 60000
+    step: 1
+    description: "TF2 lookup timeout [ms]."
+    constraints: "Must be commensurate to the maximum length of the operation."
+    read_only: true
+    var_name: tf_timeout_ms_

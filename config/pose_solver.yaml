@@ -1,0 +1,24 @@
+/pose_solver:
+  ros__parameters:
+    attitude:
+      completition:
+        enable: true
+        source:
+          topic: "/ekf_global/odometry"
+          type: "odometry"
+      covariance: [1e-1,  0.0,  0.0,
+                    0.0, 1e-1,  0.0,
+                    0.0,  0.0, 1e-1]
+    message_filters:
+      queue_size: 10
+    poses_topic_and_link:
+      - "/topic1@link1"
+      - "/topic2@link2"
+      - "/topic3@link3"
+    tf:
+      agent_prefix: "agent/"
+      base_link: "base_link"
+      fixed_frame: "map"
+      ignore_stamp: false
+      static_sensors: true
+      timeout_ms: 100
