@@ -78,13 +78,13 @@ void PoseSolver::init_subscribers()
     rclcpp::SubscriptionOptions sub_opts;
     sub_opts.callback_group = aux_sub_cgroup_;
 
-    if (attitude_completition_source_type_ == AttitudeSource::Imu) {
+    if (attitude_completion_source_type_ == AttitudeSource::Imu) {
       aux_imu_sub_ = std::make_shared<message_filters::Subscriber<Imu>>();
       aux_imu_sub_->subscribe(
         this,
         aux_sub_topic_,
         dua_qos::Reliable::get_datum_qos().get_rmw_qos_profile(),
-        sub_opts);      
+        sub_opts);
       RCLCPP_INFO(get_logger(), "[TOPIC SUB] '%s'", aux_imu_sub_->getTopic().c_str());
 
       if (poses_topic_and_link_.size() == 1ul) {
@@ -111,7 +111,7 @@ void PoseSolver::init_subscribers()
           std::placeholders::_3));
       }
     }
-    else if (attitude_completition_source_type_ == AttitudeSource::Odometry) {
+    else if (attitude_completion_source_type_ == AttitudeSource::Odometry) {
       aux_odometry_sub_ = std::make_shared<message_filters::Subscriber<Odometry>>();
       aux_odometry_sub_->subscribe(
         this,
@@ -144,7 +144,7 @@ void PoseSolver::init_subscribers()
           std::placeholders::_3));
       }
     }
-  } 
+  }
   else {
     if (poses_topic_and_link_.size() == 1ul) {
       single_sub_ = dua_create_subscription<PoseWithCovarianceStamped>(
@@ -201,7 +201,7 @@ void PoseSolver::init_internals()
 {
   base_frame_ = tf_agent_prefix_ + tf_base_link_;
   aux_iso_ = Isometry3d::Identity();
-  
+
   sensors_frame_.reserve(poses_topic_and_link_.size());
   poses_iso_.reserve(poses_topic_and_link_.size());
   sensors_iso_.reserve(poses_topic_and_link_.size());
@@ -224,7 +224,7 @@ void PoseSolver::init_internals()
           sensors_iso_.at(i));
 
         if (!res) {
-          RCLCPP_ERROR(this->get_logger(), "Cannot retrive tf for sensor %ld. Retry in 1 sec.", i);
+          RCLCPP_ERROR(this->get_logger(), "Cannot retrieve tf for sensor %ld. Retry in 1 sec.", i);
           std::this_thread::sleep_for(std::chrono::seconds(1));
           break;
         }
@@ -234,9 +234,9 @@ void PoseSolver::init_internals()
     }
   }
 
-  if (attitude_completition_enable_ && !attitude_completion_active()) {
+  if (attitude_completion_enable_ && !attitude_completion_active()) {
     std::string warn_msg = "Attitude completion disabled: ";
-    if(attitude_completition_source_type_ == AttitudeSource::None) {
+    if(attitude_completion_source_type_ == AttitudeSource::None) {
       warn_msg = warn_msg + "source type undefined";
     } else if (poses_topic_and_link_.size() >= 3ul) {
       warn_msg = warn_msg + "solution is already complete";

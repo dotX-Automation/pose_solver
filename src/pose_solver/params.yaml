@@ -3,29 +3,29 @@ namespace: pose_solver
 node_class_name: PoseSolver
 
 params:
-  attitude.completition.enable:
+  attitude.completion.enable:
     type: bool
     default_value: false
     description: "Complete attitude estimation using auxiliary topic."
     constraints: "It is a boolean value."
     read_only: true
-    var_name: attitude_completition_enable_
+    var_name: attitude_completion_enable_
 
-  attitude.completition.source.topic:
+  attitude.completion.source.topic:
     type: string
     default_value: "/ekf_global/odometry"
     description: "Attitude estimation auxiliary topic name."
     constraints: "Must be a valid topic name."
     read_only: true
-    var_name: attitude_completition_source_topic_
+    var_name: attitude_completion_source_topic_
 
-  attitude.completition.source.type:
+  attitude.completion.source.type:
     type: string
     default_value: "odometry"
     description: "Attitude estimation auxiliary topic type."
     constraints: "Must be a value in {imu, odometry}."
     read_only: true
-    validator: validate_attitude_completition_source_type
+    validator: validate_attitude_completion_source_type
 
   attitude.covariance:
     type: double_array
@@ -53,7 +53,7 @@ params:
 
   poses_topic_and_link:
     type: string_array
-    default_value: 
+    default_value:
       - "/topic@link"
     description: "List of topic followed by the sensor link name."
     constraints: "The topic and the link must be valid and splitted by @. The array size must be between 1 and 3."

@@ -75,7 +75,7 @@ PoseSolver::Solution PoseSolver::solve_pose(
       AngleAxisd ax = AngleAxisd(eul.x(), Vector3d::UnitX());
       AngleAxisd ay = AngleAxisd(eul.y(), Vector3d::UnitY());
       AngleAxisd az = AngleAxisd(yaw, Vector3d::UnitZ());
-      
+
       sol.attitude.quat = az * ay * ax;
       sol.attitude.cov(0,0) = attitude.cov(0,0);
       sol.attitude.cov(0,1) = attitude.cov(0,1);
@@ -87,8 +87,8 @@ PoseSolver::Solution PoseSolver::solve_pose(
       sol.attitude.quat = AngleAxisd(yaw, Vector3d::UnitZ());
       sol.attitude.cov(2,2) = attitude_covariance_(2,2);
     }
-  } 
-  else if (positions.size() == 3ul) {    
+  }
+  else if (positions.size() == 3ul) {
     Quaterniond att_sensor = tri_attitude(
       positions.at(0).position.point,
       positions.at(1).position.point,
@@ -101,7 +101,7 @@ PoseSolver::Solution PoseSolver::solve_pose(
 
     sol.attitude.quat = att_sensor * att_offset.inverse();
     sol.attitude.cov = attitude_covariance_;
-  } 
+  }
   else if (attitude_completion_active()) {
     sol.attitude.quat = attitude.quat;
     sol.attitude.cov = attitude.cov;

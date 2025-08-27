@@ -36,7 +36,8 @@ def generate_launch_description():
     config = os.path.join(
         get_package_share_directory('pose_solver'),
         'config',
-        'pose_solver.yaml')
+        'pose_solver.yaml'
+    )
 
     # Declare launch arguments
     nm = LaunchConfiguration('name')
@@ -44,13 +45,16 @@ def generate_launch_description():
     cf = LaunchConfiguration('cf')
     nm_launch_arg = DeclareLaunchArgument(
         'name',
-        default_value='pose_solver')
+        default_value='pose_solver'
+    )
     ns_launch_arg = DeclareLaunchArgument(
         'namespace',
-        default_value='')
+        default_value=''
+    )
     cf_launch_arg = DeclareLaunchArgument(
         'cf',
-        default_value=config)
+        default_value=config
+    )
     ld.add_action(nm_launch_arg)
     ld.add_action(ns_launch_arg)
     ld.add_action(cf_launch_arg)
