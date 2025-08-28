@@ -68,7 +68,9 @@ void PoseSolver::init_subscribers()
         poses_topic_and_link_.at(i).topic,
         dua_qos::Reliable::get_datum_qos().get_rmw_qos_profile(),
         sub_opts);
-      RCLCPP_INFO(get_logger(), "[TOPIC SUB] '%s'", pose_sub->getTopic().c_str());
+      RCLCPP_INFO(
+        get_logger(), "[TOPIC SUB] '%s'",
+        pose_sub->getSubscriber()->get_topic_name());
 
       poses_sub_.push_back(pose_sub);
     }
@@ -85,7 +87,7 @@ void PoseSolver::init_subscribers()
         aux_sub_topic_,
         dua_qos::Reliable::get_datum_qos().get_rmw_qos_profile(),
         sub_opts);
-      RCLCPP_INFO(get_logger(), "[TOPIC SUB] '%s'", aux_imu_sub_->getTopic().c_str());
+      RCLCPP_INFO(get_logger(), "[TOPIC SUB] '%s'", aux_imu_sub_->getSubscriber()->get_topic_name());
 
       if (poses_topic_and_link_.size() == 1ul) {
         sync_1_imu_sub_ = std::make_shared<message_filters::Synchronizer<ApproxTime1Imu>>(
@@ -118,7 +120,9 @@ void PoseSolver::init_subscribers()
         aux_sub_topic_,
         dua_qos::Reliable::get_datum_qos().get_rmw_qos_profile(),
         sub_opts);
-      RCLCPP_INFO(get_logger(), "[TOPIC SUB] '%s'", aux_odometry_sub_->getTopic().c_str());
+      RCLCPP_INFO(
+        get_logger(), "[TOPIC SUB] '%s'",
+        aux_odometry_sub_->getSubscriber()->get_topic_name());
 
       if (poses_topic_and_link_.size() == 1ul) {
         sync_1_odometry_sub_ = std::make_shared<message_filters::Synchronizer<ApproxTime1Odometry>>(
@@ -209,29 +213,6 @@ void PoseSolver::init_internals()
     sensors_frame_.push_back(tf_agent_prefix_ + poses_topic_and_link_.at(i).link);
     poses_iso_.push_back(Isometry3d::Identity());
     sensors_iso_.push_back(Isometry3d::Identity());
-  }
-
-  if (tf_static_sensors_) {
-    bool done = false;
-    while (!done) {
-      bool res;
-
-      for (size_t i = 0ul; i < poses_topic_and_link_.size(); i++) {
-        res = get_transform(
-          base_frame_,
-          sensors_frame_.at(i),
-          rclcpp::Time(),
-          sensors_iso_.at(i));
-
-        if (!res) {
-          RCLCPP_ERROR(this->get_logger(), "Cannot retrieve tf for sensor %ld. Retry in 1 sec.", i);
-          std::this_thread::sleep_for(std::chrono::seconds(1));
-          break;
-        }
-      }
-
-      done = res;
-    }
   }
 
   if (attitude_completion_enable_ && !attitude_completion_active()) {

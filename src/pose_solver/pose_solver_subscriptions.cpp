@@ -142,6 +142,30 @@ void PoseSolver::general_clbk(
     const std::vector<PositionMsg> & positions,
     const AttitudeMsg & attitude)
 {
+  if (tf_static_sensors_ && !tf_static_updated_) {
+    bool done = false;
+    while (!done) {
+      bool res;
+
+      for (size_t i = 0ul; i < poses_topic_and_link_.size(); i++) {
+        res = get_transform(
+          base_frame_,
+          sensors_frame_.at(i),
+          rclcpp::Time(),
+          sensors_iso_.at(i));
+
+        if (!res) {
+          RCLCPP_ERROR(this->get_logger(), "Cannot retrieve tf for sensor %ld. Retry in 1 sec.", i);
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+          break;
+        }
+      }
+
+      done = res;
+    }
+    tf_static_updated_ = true;
+  }
+
   rclcpp::Time timestamp = attitude.header.stamp;
 
   for (size_t i = 0ul; i < positions.size(); i++) {

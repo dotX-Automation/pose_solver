@@ -11,14 +11,6 @@ params:
     read_only: true
     var_name: attitude_completion_enable_
 
-  attitude.completion.source.topic:
-    type: string
-    default_value: "/ekf_global/odometry"
-    description: "Attitude estimation auxiliary topic name."
-    constraints: "Must be a valid topic name."
-    read_only: true
-    var_name: attitude_completion_source_topic_
-
   attitude.completion.source.type:
     type: string
     default_value: "odometry"

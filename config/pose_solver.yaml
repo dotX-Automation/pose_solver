@@ -4,7 +4,6 @@
       completion:
         enable: true
         source:
-          topic: "/ekf_global/odometry"
           type: "odometry"
       covariance: [1e-1,  0.0,  0.0,
                     0.0, 1e-1,  0.0,

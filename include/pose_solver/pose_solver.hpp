@@ -217,7 +217,6 @@ private:
 
   /* Node parameters. */
   bool attitude_completion_enable_ = false;
-  std::string attitude_completion_source_topic_ = "";
   AttitudeSource attitude_completion_source_type_ = AttitudeSource::None;
   Matrix3d attitude_covariance_ = Matrix3d::Zero();
   int64_t message_filters_queue_size_ = 0;
@@ -240,6 +239,7 @@ private:
   Isometry3d aux_iso_;
   std::vector<Isometry3d> poses_iso_;
   std::vector<Isometry3d> sensors_iso_;
+  bool tf_static_updated_ = false;
 
   /* Publishers. */
   rclcpp::Publisher<PoseWithCovarianceStamped>::SharedPtr pose_pub_;
