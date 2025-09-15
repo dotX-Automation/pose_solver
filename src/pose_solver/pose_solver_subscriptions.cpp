@@ -212,7 +212,8 @@ void PoseSolver::general_clbk(
         "Cannot retrive fixed frames TF for attitude completition");
       return;
     } else {
-      arg_attitude.quat = iso.linear() * attitude.attitude.quat;
+      Quaterniond iso_quat(iso.linear());
+      arg_attitude.quat = iso_quat * attitude.attitude.quat * iso_quat.conjugate();
       arg_attitude.cov = iso.linear() * attitude.attitude.cov * iso.linear().transpose();
     }
   }
