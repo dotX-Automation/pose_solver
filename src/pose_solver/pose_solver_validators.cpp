@@ -28,18 +28,18 @@ namespace pose_solver
 {
 
 
-bool PoseSolver::validate_attitude_completition_source_type(const rclcpp::Parameter & p)
+bool PoseSolver::validate_attitude_completion_source_type(const rclcpp::Parameter & p)
 {
   std::string type = p.as_string();
 
   if (type == "imu") {
-    attitude_completition_source_type_ = AttitudeSource::Imu;
+    attitude_completion_source_type_ = AttitudeSource::Imu;
   } else if (type == "odometry") {
-    attitude_completition_source_type_ = AttitudeSource::Odometry;
+    attitude_completion_source_type_ = AttitudeSource::Odometry;
   } else {
     RCLCPP_ERROR(
       this->get_logger(),
-      "PoseSolver::validate_attitude_completition_source_type: Invalid attitude.completition.source.type parameter: %s",
+      "PoseSolver::validate_attitude_completion_source_type: Invalid attitude.completion.source.type parameter: %s",
       type.c_str());
     return false;
   }

@@ -51,7 +51,7 @@ void PoseSolver::input_1_imu_clbk(
   std::vector<PositionMsg> positions;
   positions.reserve(1);
   positions.push_back(PositionMsg(*pose1));
-  
+
   general_clbk(positions, attitude);
 }
 
@@ -82,7 +82,7 @@ void PoseSolver::input_2_clbk(
   positions.reserve(2);
   positions.push_back(PositionMsg(*pose1));
   positions.push_back(PositionMsg(*pose2));
-  
+
   general_clbk(positions, attitude);
 }
 
@@ -133,7 +133,7 @@ void PoseSolver::input_3_clbk(
   positions.push_back(PositionMsg(*pose1));
   positions.push_back(PositionMsg(*pose2));
   positions.push_back(PositionMsg(*pose3));
-  
+
   general_clbk(positions, attitude);
 }
 
@@ -142,11 +142,35 @@ void PoseSolver::general_clbk(
     const std::vector<PositionMsg> & positions,
     const AttitudeMsg & attitude)
 {
+  if (tf_static_sensors_ && !tf_static_updated_) {
+    bool done = false;
+    while (!done) {
+      bool res;
+
+      for (size_t i = 0ul; i < poses_topic_and_link_.size(); i++) {
+        res = get_transform(
+          base_frame_,
+          sensors_frame_.at(i),
+          rclcpp::Time(),
+          sensors_iso_.at(i));
+
+        if (!res) {
+          RCLCPP_ERROR(this->get_logger(), "Cannot retrieve tf for sensor %ld. Retry in 1 sec.", i);
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+          break;
+        }
+      }
+
+      done = res;
+    }
+    tf_static_updated_ = true;
+  }
+
   rclcpp::Time timestamp = attitude.header.stamp;
 
   for (size_t i = 0ul; i < positions.size(); i++) {
     if (positions.at(i).header.stamp.sec > timestamp.seconds() ||
-      (positions.at(i).header.stamp.sec == timestamp.seconds() && 
+      (positions.at(i).header.stamp.sec == timestamp.seconds() &&
       positions.at(i).header.stamp.nanosec > timestamp.nanoseconds()))
     {
       timestamp = positions.at(i).header.stamp;
@@ -168,7 +192,7 @@ void PoseSolver::general_clbk(
         positions.at(i).header.stamp,
         pos_iso.isometry);
       if (!res) {
-        RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000, 
+        RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000,
           "Cannot retrive body-sensor TF for sensor %ld.", i);
         return;
       }
@@ -184,8 +208,8 @@ void PoseSolver::general_clbk(
         positions.at(i).header.stamp,
         iso);
       if (!res) {
-        RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000, 
-          "Cannot retrive fixed frames TF for sensor %ld.", i);
+        RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000,
+          "Cannot retrieve fixed frames TF for sensor %ld.", i);
         return;
       } else {
         pos_iso.position.point = iso * positions.at(i).position.point;
@@ -195,7 +219,7 @@ void PoseSolver::general_clbk(
 
     arg_positions_iso.push_back(pos_iso);
   }
-  
+
   Attitude arg_attitude;
 
   if (attitude.header.frame_id == tf_fixed_frame_) {
@@ -208,8 +232,8 @@ void PoseSolver::general_clbk(
       attitude.header.stamp,
       iso);
     if (!res) {
-      RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000, 
-        "Cannot retrive fixed frames TF for attitude completition");
+      RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000,
+        "Cannot retrieve fixed frames TF for attitude completion");
       return;
     } else {
       Quaterniond iso_quat(iso.linear());

@@ -1,10 +1,9 @@
 /pose_solver:
   ros__parameters:
     attitude:
-      completition:
+      completion:
         enable: true
         source:
-          topic: "/ekf_global/odometry"
           type: "odometry"
       covariance: [1e-1,  0.0,  0.0,
                     0.0, 1e-1,  0.0,
@@ -22,3 +21,4 @@
       ignore_stamp: false
       static_sensors: true
       timeout_ms: 100
+    use_sim_time: false

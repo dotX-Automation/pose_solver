@@ -216,9 +216,8 @@ private:
   void init_internals();
 
   /* Node parameters. */
-  bool attitude_completition_enable_ = false;
-  std::string attitude_completition_source_topic_ = "";
-  AttitudeSource attitude_completition_source_type_ = AttitudeSource::None;
+  bool attitude_completion_enable_ = false;
+  AttitudeSource attitude_completion_source_type_ = AttitudeSource::None;
   Matrix3d attitude_covariance_ = Matrix3d::Zero();
   int64_t message_filters_queue_size_ = 0;
   std::vector<Sensor> poses_topic_and_link_ = {};
@@ -230,7 +229,7 @@ private:
   int64_t tf_timeout_ms_ = 0;
 
   /* Node Parameters Validators. */
-  bool validate_attitude_completition_source_type(const rclcpp::Parameter & p);
+  bool validate_attitude_completion_source_type(const rclcpp::Parameter & p);
   bool validate_attitude_covariance(const rclcpp::Parameter & p);
   bool validate_poses_topic_and_link(const rclcpp::Parameter & p);
 
@@ -240,6 +239,7 @@ private:
   Isometry3d aux_iso_;
   std::vector<Isometry3d> poses_iso_;
   std::vector<Isometry3d> sensors_iso_;
+  bool tf_static_updated_ = false;
 
   /* Publishers. */
   rclcpp::Publisher<PoseWithCovarianceStamped>::SharedPtr pose_pub_;
@@ -258,7 +258,7 @@ private:
 
   /* Subscriptions. */
   rclcpp::Subscription<PoseWithCovarianceStamped>::SharedPtr single_sub_;
-  
+
   std::shared_ptr<message_filters::Subscriber<Imu>> aux_imu_sub_;
   std::shared_ptr<message_filters::Subscriber<Odometry>> aux_odometry_sub_;
   std::vector<std::shared_ptr<message_filters::Subscriber<PoseWithCovarianceStamped>>> poses_sub_;
@@ -287,7 +287,7 @@ private:
     const PoseWithCovarianceStamped::ConstSharedPtr & pose1);
 
   /**
-   * @brief Callback to compute solution with one point and attitude completition with imu.
+   * @brief Callback to compute solution with one point and attitude completion with imu.
    *
    * @param pose1 PoseWithCovarianceStamped message to parse.
    * @param aux Imu message to parse.
@@ -295,9 +295,9 @@ private:
   void input_1_imu_clbk(
     const PoseWithCovarianceStamped::ConstSharedPtr & pose1,
     const Imu::ConstSharedPtr & aux);
-  
+
   /**
-   * @brief Callback to compute solution with one point and attitude completition with odometry.
+   * @brief Callback to compute solution with one point and attitude completion with odometry.
    *
    * @param pose1 PoseWithCovarianceStamped message to parse.
    * @param aux Odometry message to parse.
@@ -305,7 +305,7 @@ private:
   void input_1_odometry_clbk(
     const PoseWithCovarianceStamped::ConstSharedPtr & pose1,
     const Odometry::ConstSharedPtr & aux);
-  
+
   /**
    * @brief Callback to compute solution with two points.
    *
@@ -315,9 +315,9 @@ private:
   void input_2_clbk(
     const PoseWithCovarianceStamped::ConstSharedPtr & pose1,
     const PoseWithCovarianceStamped::ConstSharedPtr & pose2);
-  
+
   /**
-   * @brief Callback to compute solution with two points and attitude completition with imu.
+   * @brief Callback to compute solution with two points and attitude completion with imu.
    *
    * @param pose1 PoseWithCovarianceStamped message to parse.
    * @param pose2 PoseWithCovarianceStamped message to parse.
@@ -327,9 +327,9 @@ private:
     const PoseWithCovarianceStamped::ConstSharedPtr & pose1,
     const PoseWithCovarianceStamped::ConstSharedPtr & pose2,
     const Imu::ConstSharedPtr & aux);
-  
+
   /**
-   * @brief Callback to compute solution with two points and attitude completition with odometry.
+   * @brief Callback to compute solution with two points and attitude completion with odometry.
    *
    * @param pose1 PoseWithCovarianceStamped message to parse.
    * @param pose2 PoseWithCovarianceStamped message to parse.
@@ -339,7 +339,7 @@ private:
     const PoseWithCovarianceStamped::ConstSharedPtr & pose1,
     const PoseWithCovarianceStamped::ConstSharedPtr & pose2,
     const Odometry::ConstSharedPtr & aux);
-  
+
   /**
    * @brief Callback to compute solution with three points.
    *
@@ -386,14 +386,14 @@ private:
    * @brief Determine if the attitude completion is active.
    */
   inline bool attitude_completion_active() {
-    return attitude_completition_enable_
-      && attitude_completition_source_type_ != AttitudeSource::None
+    return attitude_completion_enable_
+      && attitude_completion_source_type_ != AttitudeSource::None
       && poses_topic_and_link_.size() < 3ul;
   }
 
   /**
    * @brief Wrap angle between -pi and pi.
-   * 
+   *
    * @param angle Angle in radians.
    */
   double wrap_angle(double angle);
@@ -411,7 +411,7 @@ private:
    * @brief Compute agent point using the known position of multiple sensors.
    *
    * @param points Sensor points with their respective isometry.
-   * @param attitude Agent known attitude for attitude completition.
+   * @param attitude Agent known attitude for attitude completion.
    */
   Solution solve_pose(
     const std::vector<PositionIso> & positions,
