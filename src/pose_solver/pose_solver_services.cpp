@@ -27,21 +27,23 @@
 namespace pose_solver
 {
 
-bool PoseSolver::get_transform(
+bool PoseSolver::get_isometry(
   const std::string & source, const std::string & target,
   const rclcpp::Time & time, Isometry3d & isometry)
 {
   Time stamp = tf_ignore_stamp_ ? rclcpp::Time() : time;
+  Header source_hdr{}, target_hdr{};
 
-  auto req = std::make_shared<GetTransform::Request>();
-  req->source.frame_id = target;
-  req->source.stamp = stamp;
-  req->target.frame_id = source;
-  req->target.stamp = stamp;
-  req->timeout = rclcpp::Duration(std::chrono::nanoseconds(1000 * tf_timeout_ms_));
+  source_hdr.frame_id = source;
+  source_hdr.stamp = stamp;
+  target_hdr.frame_id = target;
+  target_hdr.stamp = stamp;
+  auto timeout = rclcpp::Duration(std::chrono::nanoseconds(1000000 * tf_timeout_ms_));
+  TransformStamped tf{};
 
-  auto resp = get_transform_client_->call_sync(req);
-  if (resp == nullptr || resp->result.result != CommandResultStamped::SUCCESS) {
+  uint8_t res = get_transform(source_hdr, target_hdr, tf, true, timeout);
+
+  if (res == CommandResultStamped::TIMEOUT || res == CommandResultStamped::ERROR) {
     RCLCPP_ERROR_THROTTLE(get_logger(), *get_clock(), 1000,
       "Error requesting transform from %s to %s",
       source.c_str(), target.c_str());
@@ -49,15 +51,15 @@ bool PoseSolver::get_transform(
   }
 
   Vector3d vect = Vector3d(
-    resp->transform.transform.translation.x,
-    resp->transform.transform.translation.y,
-    resp->transform.transform.translation.z);
+    tf.transform.translation.x,
+    tf.transform.translation.y,
+    tf.transform.translation.z);
 
   Quaterniond quat = Quaterniond(
-    resp->transform.transform.rotation.w,
-    resp->transform.transform.rotation.x,
-    resp->transform.transform.rotation.y,
-    resp->transform.transform.rotation.z);
+    tf.transform.rotation.w,
+    tf.transform.rotation.x,
+    tf.transform.rotation.y,
+    tf.transform.rotation.z);
 
   isometry.translation() = vect;
   isometry.linear() = quat.toRotationMatrix();

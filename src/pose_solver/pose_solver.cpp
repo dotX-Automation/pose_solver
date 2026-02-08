@@ -34,7 +34,7 @@ PoseSolver::PoseSolver(const rclcpp::NodeOptions & opts)
 
   init_internals();
 
-  RCLCPP_INFO(this->get_logger(), "Node initialized");
+  RCLCPP_INFO(get_logger(), "Node initialized");
 }
 
 PoseSolver::~PoseSolver()
@@ -194,13 +194,6 @@ void PoseSolver::init_publishers()
 }
 
 
-void PoseSolver::init_service_clients()
-{
-  get_transform_client_ = dua_create_service_client<GetTransform>(
-    get_transform_client_name_);
-}
-
-
 void PoseSolver::init_internals()
 {
   base_frame_ = tf_agent_prefix_ + tf_base_link_;
@@ -217,13 +210,13 @@ void PoseSolver::init_internals()
 
   if (attitude_completion_enable_ && !attitude_completion_active()) {
     std::string warn_msg = "Attitude completion disabled: ";
-    if(attitude_completion_source_type_ == AttitudeSource::None) {
+    if (attitude_completion_source_type_ == AttitudeSource::None) {
       warn_msg = warn_msg + "source type undefined";
     } else if (poses_topic_and_link_.size() >= 3ul) {
       warn_msg = warn_msg + "solution is already complete";
     }
 
-    RCLCPP_WARN(this->get_logger(), warn_msg.c_str());
+    RCLCPP_WARN(get_logger(), warn_msg.c_str());
   }
 }
 

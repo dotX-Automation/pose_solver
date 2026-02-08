@@ -72,9 +72,9 @@ def generate_launch_description():
             cf
         ],
         remappings=[
-            ('/dua_tf_server/get_transform', '/dua_tf_server/get_transform'),
-            ('/attitude',                    '/attitude'),
-            ('/pose_solver/pose',            '/pose_solver/pose'),
+            ('/get_transform',    '/get_transform'),
+            ('/attitude',         '/attitude'),
+            ('/pose_solver/pose', '/pose_solver/pose'),
         ]
     )
     ld.add_action(node)

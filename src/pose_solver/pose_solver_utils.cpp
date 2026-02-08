@@ -28,7 +28,7 @@ namespace pose_solver
 {
 
 double PoseSolver::wrap_angle(double angle) {
-  if(angle >= 0) {
+  if (angle >= 0) {
     return std::fmod(angle + M_PI, 2*M_PI) - M_PI;
   } else {
     return M_PI - std::fmod(M_PI - angle, 2*M_PI);

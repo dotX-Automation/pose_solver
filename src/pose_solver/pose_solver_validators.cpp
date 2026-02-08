@@ -38,7 +38,7 @@ bool PoseSolver::validate_attitude_completion_source_type(const rclcpp::Paramete
     attitude_completion_source_type_ = AttitudeSource::Odometry;
   } else {
     RCLCPP_ERROR(
-      this->get_logger(),
+      get_logger(),
       "PoseSolver::validate_attitude_completion_source_type: Invalid attitude.completion.source.type parameter: %s",
       type.c_str());
     return false;
@@ -68,7 +68,7 @@ bool PoseSolver::validate_attitude_covariance(const rclcpp::Parameter & p)
     attitude_covariance_(2,2) = cov.at(8);
   } else {
     RCLCPP_ERROR(
-      this->get_logger(),
+      get_logger(),
       "PoseSolver::validate_attitude_covariance: Invalid attitude.covariance size");
     return false;
   }
@@ -83,7 +83,7 @@ bool PoseSolver::validate_poses_topic_and_link(const rclcpp::Parameter & p)
 
   if (list.size() < 1ul || list.size() > 3ul) {
     RCLCPP_ERROR(
-      this->get_logger(),
+      get_logger(),
       "PoseSolver::validate_poses_topic_and_link: Invalid poses_topic_and_link size");
     return false;
   }
@@ -94,7 +94,7 @@ bool PoseSolver::validate_poses_topic_and_link(const rclcpp::Parameter & p)
     size_t pos = topic_and_link.find("@");
     if (pos == std::string::npos || pos == 0ul || pos == topic_and_link.size() - 1ul) {
       RCLCPP_ERROR(
-        this->get_logger(),
+        get_logger(),
         "PoseSolver::validate_poses_topic_and_link: Invalid poses_topic_and_link element: %s",
         topic_and_link.c_str());
       return false;

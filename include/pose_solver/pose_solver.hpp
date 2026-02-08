@@ -47,8 +47,8 @@
 #include <eigen3/Eigen/Geometry>
 
 #include <dua_common_interfaces/msg/command_result_stamped.hpp>
-#include <dua_geometry_interfaces/srv/get_transform.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 
@@ -56,12 +56,10 @@
 #include <message_filters/synchronizer.hpp>
 #include <message_filters/sync_policies/approximate_time.hpp>
 
-#include <simple_serviceclient_cpp/simple_serviceclient.hpp>
+using namespace Eigen;
 
 using namespace builtin_interfaces::msg;
 using namespace dua_common_interfaces::msg;
-using namespace dua_geometry_interfaces::srv;
-using namespace Eigen;
 using namespace geometry_msgs::msg;
 using namespace message_filters;
 using namespace nav_msgs::msg;
@@ -208,7 +206,6 @@ private:
   void init_cgroups() override;
   void init_subscribers() override;
   void init_publishers() override;
-  void init_service_clients() override;
 
   /**
    * @brief Routine to initialize node structures.
@@ -362,26 +359,22 @@ private:
     const std::vector<PositionMsg> & positions,
     const AttitudeMsg & attitude);
 
-  /* Service clients */
-  simple_serviceclient::Client<GetTransform>::SharedPtr get_transform_client_;
+  /* Utility routines */
 
-  /* Service clients names */
-  static const std::string get_transform_client_name_;
-
-  /* Service clients routines */
   /**
-   * @brief Retrieve transform from the TF Server
+   * @brief Retrieve a transform as an Eigen::Isometry3d.
    *
    * @param source Source frame.
    * @param target Target frame.
    * @param time Request timestamp.
    * @param transform Transform result.
+   *
+   * @return True if the transformation is available, false otherwise.
    */
-  bool get_transform(
+  bool get_isometry(
     const std::string & source, const std::string & target,
     const rclcpp::Time & time, Isometry3d & isometry);
 
-  /* Utility routines */
   /**
    * @brief Determine if the attitude completion is active.
    */

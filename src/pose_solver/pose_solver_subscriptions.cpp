@@ -148,14 +148,14 @@ void PoseSolver::general_clbk(
       bool res;
 
       for (size_t i = 0ul; i < poses_topic_and_link_.size(); i++) {
-        res = get_transform(
+        res = get_isometry(
           base_frame_,
           sensors_frame_.at(i),
           rclcpp::Time(),
           sensors_iso_.at(i));
 
         if (!res) {
-          RCLCPP_ERROR(this->get_logger(), "Cannot retrieve tf for sensor %ld. Retry in 1 sec.", i);
+          RCLCPP_ERROR(get_logger(), "Cannot retrieve tf for sensor %ld. Retry in 1 sec.", i);
           std::this_thread::sleep_for(std::chrono::seconds(1));
           break;
         }
@@ -186,7 +186,7 @@ void PoseSolver::general_clbk(
     if (tf_static_sensors_) {
       pos_iso.isometry = sensors_iso_.at(i);
     } else {
-      bool res = get_transform(
+      bool res = get_isometry(
         base_frame_,
         sensors_frame_.at(i),
         positions.at(i).header.stamp,
@@ -202,7 +202,7 @@ void PoseSolver::general_clbk(
       pos_iso.position = positions.at(i).position;
     } else {
       Isometry3d iso;
-      bool res = get_transform(
+      bool res = get_isometry(
         tf_fixed_frame_,
         positions.at(i).header.frame_id,
         positions.at(i).header.stamp,
@@ -226,7 +226,7 @@ void PoseSolver::general_clbk(
     arg_attitude = attitude.attitude;
   } else {
     Isometry3d iso;
-    bool res = get_transform(
+    bool res = get_isometry(
       tf_fixed_frame_,
       attitude.header.frame_id,
       attitude.header.stamp,

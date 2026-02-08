@@ -8,6 +8,11 @@
       covariance: [1e-1,  0.0,  0.0,
                     0.0, 1e-1,  0.0,
                     0.0,  0.0, 1e-1]
+    dua:
+      tf_server:
+        get_transform: true
+        transform_pose: false
+        wait_servers: false
     message_filters:
       queue_size: 10
     poses_topic_and_link:

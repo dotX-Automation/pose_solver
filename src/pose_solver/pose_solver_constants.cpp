@@ -33,7 +33,4 @@ const std::string PoseSolver::pose_pub_topic_ = "~/pose";
 /* Subscriptions topics. */
 const std::string PoseSolver::aux_sub_topic_ = "/attitude";
 
-/* Service client Names */
-const std::string PoseSolver::get_transform_client_name_ = "/dua_tf_server/get_transform";
-
 } // namespace pose_solver
